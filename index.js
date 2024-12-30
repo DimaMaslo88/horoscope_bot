@@ -5,7 +5,17 @@ const token = '7118715362:AAFD29pZps2ve4rDlAaAomZGOmV_L4h6JCI'
 
 const bot = new telegramApi(token,{polling:true})
 const data ={}
-
+const gameOptions = {
+    reply_markup:JSON.stringify({
+        inline_keyboard:[
+            [
+                {text:'Текст кнопки',callback_data:'1'},
+                {text:'Текст кнопки',callback_data:'2'},
+                {text:'Текст кнопки',callback_data:'3'}
+            ]
+        ]
+    })
+}
 
 const startBot =()=>{
     bot.setMyCommands([
@@ -28,10 +38,15 @@ const startBot =()=>{
             await bot.sendMessage(chatId,'Давай сыграем в игру! Я загадаю цифру от от 1 до 10. Угадай ее')
             const randomNumber = Math.floor(Math.random() * 10)
             data[chatId] = randomNumber
-            return bot.sendMessage(chatId,'Отгадывай, я жду')
+            return bot.sendMessage(chatId,'Отгадывай, я жду',gameOptions)
         }
         return bot.sendMessage(chatId,'Я не понимаю че ты хочешь))')
 
+    })
+    bot.on('callback_query',msg=>{
+        const data = msg.data
+        const id = msg.message.chat.id
+             console.log(msg)
     })
 }
 startBot()
