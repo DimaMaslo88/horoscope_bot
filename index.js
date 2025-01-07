@@ -17,7 +17,19 @@ const gameOptions = {
         ]
     })
 }
-
+const againOptions ={
+    reply_markup: JSON.stringify({
+        inline_keyboard:[
+           [ {text:'Играть еще раз', callback_data:'/again'}]
+        ]
+    })
+}
+const startGame = async (chatId)=>{
+    await bot.sendMessage(chatId, 'Давай сыграем в игру! Я загадаю цифру от от 1 до 10. Угадай ее')
+    const randomNumber = Math.floor(Math.random() * 10)
+    data[chatId] = randomNumber
+   await bot.sendMessage(chatId, 'Отгадывай, я жду', gameOptions)
+}
 const startBot = () => {
     bot.setMyCommands([
         {command: '/start', description: 'Стартовое приветствие'},
@@ -36,10 +48,7 @@ const startBot = () => {
             return bot.sendMessage(chatId, `Тебя зовут ${msg.from.first_name}`)
         }
         if (text === '/game') {
-            await bot.sendMessage(chatId, 'Давай сыграем в игру! Я загадаю цифру от от 1 до 10. Угадай ее')
-            const randomNumber = Math.floor(Math.random() * 10)
-            data[chatId] = randomNumber
-            return bot.sendMessage(chatId, 'Отгадывай, я жду', gameOptions)
+            return startGame(chatId)
         }
         return bot.sendMessage(chatId, 'Я не понимаю че ты хочешь))')
 
@@ -48,11 +57,14 @@ const startBot = () => {
         const dataCallback = msg.data
         const id = msg.message.chat.id
         console.log(msg)
+if(dataCallback === '/again'){
+return startGame(id)
+}
         // await bot.sendMessage(id, `Ты выбрал цифру ${data}`)
         if (dataCallback === data[id]) {
-            return bot.sendMessage(id, `Все верно!!!!Загаданая цифра ${data[id]}`)
+            return bot.sendMessage(id, `Все верно!!!!Загаданая цифра ${data[id]}`,againOptions)
         }else {
-            return bot.sendMessage(id,`Не угадал, попробуй еще раз.Загаданая цифра ${data[id]}`)
+            return bot.sendMessage(id,`Не угадал, попробуй еще раз.Загаданая цифра ${data[id]}`,againOptions)
         }
 
     })
